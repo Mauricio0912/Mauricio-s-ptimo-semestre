@@ -1,68 +1,56 @@
-package com.example.actividad2;
+package com.example.calculadoraimc;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-  EditText etUserName, etPassword;
-  Button btnLogin, btnCancel;
-  TextView tvMessage;
-
-  // Lista de usuarios y contraseñas válidas
-  String[][] credenciales = {
-    {"mauricio", "abcd"},
-  };
+  EditText d_cuenta, d_personas;
+  Button calcular;
+  TextView resultado;
+  RadioGroup opcionesPropina;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
-    etUserName = findViewById(R.id.etUserName);
-    etPassword = findViewById(R.id.etPassword);
-    btnLogin = findViewById(R.id.btnLogin);
-    btnCancel = findViewById(R.id.btnCancel);
-    tvMessage = findViewById(R.id.tvMessage);
+    d_cuenta = findViewById(R.id.cuenta);
+    d_personas = findViewById(R.id.personas);
+    calcular = findViewById(R.id.calcular);
+    resultado = findViewById(R.id.res);
+    opcionesPropina = findViewById(R.id.opcionesPropina);
 
-    btnLogin.setOnClickListener(new View.OnClickListener() {
+    calcular.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        String user = etUserName.getText().toString().trim();
-        String pass = etPassword.getText().toString().trim();
+        double cuenta = Double.parseDouble(d_cuenta.getText().toString());
+        int personas = Integer.parseInt(d_personas.getText().toString());
 
-        boolean acceso = false;
+        // Obtener propina seleccionada
+        int selectedId = opcionesPropina.getCheckedRadioButtonId();
+        double porcentaje = 0;
 
-        // Verificar si las credenciales coinciden con alguna en la lista
-        for (String[] cred : credenciales) {
-          if (user.equalsIgnoreCase(cred[0]) && pass.equals(cred[1])) {
-            acceso = true;
-            break;
-          }
+        if (selectedId == R.id.op5) {
+          porcentaje = 0.05;
+        } else if (selectedId == R.id.op10) {
+          porcentaje = 0.10;
+        } else if (selectedId == R.id.op15) {
+          porcentaje = 0.15;
         }
 
-        if (acceso) {
-          tvMessage.setText("ACCESO CORRECTO");
-          tvMessage.setTextColor(ContextCompat.getColor(MainActivity.this, android.R.color.holo_green_dark));
-        } else {
-          tvMessage.setText("ACCESO DENEGADO");
-          tvMessage.setTextColor(ContextCompat.getColor(MainActivity.this, android.R.color.holo_red_dark));
-        }
-      }
-    });
+        double totalConPropina = cuenta + (cuenta * porcentaje);
+        double porPersona = totalConPropina / personas;
 
-    btnCancel.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        etUserName.setText("");
-        etPassword.setText("");
-        tvMessage.setText("");
+        resultado.setText("Total con propina: $" + totalConPropina +
+          "\nCada persona paga: $" + String.format("%.2f", porPersona));
       }
     });
   }
